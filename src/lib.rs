@@ -1,12 +1,13 @@
-#![feature(zero_one)]
+extern crate arithmetic;
 
-use std::num::{Zero, One};
-use std::ops::*;
+use arithmetic::*;
 
-#[derive(Clone, Copy, Default, Debug)]
+use std::ops::{Neg, Add, Sub, Mul, Div};
+
+#[derive(Clone, Copy, Debug)]
 pub struct DualNum<T>(pub T, pub T);
 
-impl<T> DualNum<T> where T: Zero + One {
+impl<T> DualNum<T> where T: Field {
   pub fn constant(value: T) -> DualNum<T> {
     DualNum(value, T::zero())
   }
@@ -26,13 +27,13 @@ impl<T> DualNum<T> {
   }
 }
 
-impl<T> DualNum<T> where T: Copy + Zero + One + Add<Output=T> + Sub<Output=T> + Mul<Output=T> + Div<Output=T> {
+impl<T> DualNum<T> where T: Copy + Field {
   pub fn reciprocal(self) -> DualNum<T> {
     DualNum::constant(T::zero()) / self
   }
 }
 
-impl<T> Neg for DualNum<T> where T: Copy + Neg<Output=T> {
+impl<T> Neg for DualNum<T> where T: Copy + Field {
   type Output = DualNum<T>;
 
   fn neg(self) -> DualNum<T> {
@@ -40,7 +41,7 @@ impl<T> Neg for DualNum<T> where T: Copy + Neg<Output=T> {
   }
 }
 
-impl<T> Add<T> for DualNum<T> where T: Copy + Add<Output=T> {
+impl<T> Add<T> for DualNum<T> where T: Copy + Field {
   type Output = DualNum<T>;
 
   fn add(self, rhs: T) -> DualNum<T> {
@@ -48,7 +49,7 @@ impl<T> Add<T> for DualNum<T> where T: Copy + Add<Output=T> {
   }
 }
 
-impl<T> Add for DualNum<T> where T: Copy + Add<Output=T> {
+impl<T> Add for DualNum<T> where T: Copy + Field {
   type Output = DualNum<T>;
 
   fn add(self, rhs: DualNum<T>) -> DualNum<T> {
@@ -56,7 +57,7 @@ impl<T> Add for DualNum<T> where T: Copy + Add<Output=T> {
   }
 }
 
-impl<T> Sub<T> for DualNum<T> where T: Copy + Sub<Output=T> {
+impl<T> Sub<T> for DualNum<T> where T: Copy + Field {
   type Output = DualNum<T>;
 
   fn sub(self, rhs: T) -> DualNum<T> {
@@ -64,7 +65,7 @@ impl<T> Sub<T> for DualNum<T> where T: Copy + Sub<Output=T> {
   }
 }
 
-impl<T> Sub for DualNum<T> where T: Copy + Sub<Output=T> {
+impl<T> Sub for DualNum<T> where T: Copy + Field {
   type Output = DualNum<T>;
 
   fn sub(self, rhs: DualNum<T>) -> DualNum<T> {
@@ -72,7 +73,7 @@ impl<T> Sub for DualNum<T> where T: Copy + Sub<Output=T> {
   }
 }
 
-impl<T> Mul<T> for DualNum<T> where T: Copy + Mul<Output=T> {
+impl<T> Mul<T> for DualNum<T> where T: Copy + Field {
   type Output = DualNum<T>;
 
   fn mul(self, rhs: T) -> DualNum<T> {
@@ -80,7 +81,7 @@ impl<T> Mul<T> for DualNum<T> where T: Copy + Mul<Output=T> {
   }
 }
 
-impl<T> Mul for DualNum<T> where T: Copy + Add<Output=T> + Mul<Output=T> {
+impl<T> Mul for DualNum<T> where T: Copy + Field {
   type Output = DualNum<T>;
 
   fn mul(self, rhs: DualNum<T>) -> DualNum<T> {
@@ -88,7 +89,7 @@ impl<T> Mul for DualNum<T> where T: Copy + Add<Output=T> + Mul<Output=T> {
   }
 }
 
-impl<T> Div<T> for DualNum<T> where T: Copy + Div<Output=T> {
+impl<T> Div<T> for DualNum<T> where T: Copy + Field {
   type Output = DualNum<T>;
 
   fn div(self, rhs: T) -> DualNum<T> {
@@ -96,7 +97,7 @@ impl<T> Div<T> for DualNum<T> where T: Copy + Div<Output=T> {
   }
 }
 
-impl<T> Div for DualNum<T> where T: Copy + Add<Output=T> + Sub<Output=T> + Mul<Output=T> + Div<Output=T> {
+impl<T> Div for DualNum<T> where T: Copy + Field {
   type Output = DualNum<T>;
 
   fn div(self, rhs: DualNum<T>) -> DualNum<T> {

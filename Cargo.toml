@@ -7,4 +7,5 @@ authors = ["Peter Jin <peterhaijin@gmail.com>"]
 name = "dualnum"
 path = "src/lib.rs"
 
-#[dependencies]
+[dependencies]
+arithmetic = { path = "../libarithmetic" }
