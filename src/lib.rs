@@ -16,13 +16,19 @@ impl<T> DualNum<T> where T: Zero + One {
   }
 }
 
-impl<T> DualNum<T> where T: Copy {
-  pub fn primal(&self) -> T {
+impl<T> DualNum<T> {
+  pub fn real(self) -> T {
     self.0
   }
 
-  pub fn dual(&self) -> T {
+  pub fn dual(self) -> T {
     self.1
+  }
+}
+
+impl<T> DualNum<T> where T: Copy + Zero + One + Add<Output=T> + Sub<Output=T> + Mul<Output=T> + Div<Output=T> {
+  pub fn reciprocal(self) -> DualNum<T> {
+    DualNum::constant(T::zero()) / self
   }
 }
 
@@ -30,8 +36,6 @@ impl<T> Neg for DualNum<T> where T: Copy + Neg<Output=T> {
   type Output = DualNum<T>;
 
   fn neg(self) -> DualNum<T> {
-    //let DualNum(x, y): DualNum<T> = self;
-    //DualNum(-x, -y)
     DualNum(-self.0, -self.1)
   }
 }
@@ -80,7 +84,7 @@ impl<T> Mul for DualNum<T> where T: Copy + Add<Output=T> + Mul<Output=T> {
   type Output = DualNum<T>;
 
   fn mul(self, rhs: DualNum<T>) -> DualNum<T> {
-    DualNum(self.0 * rhs.0, self.0 * rhs.1 + self.1 * rhs.0)
+    DualNum(self.0 * rhs.0, self.1 * rhs.0 + self.0 * rhs.1)
   }
 }
 
@@ -92,10 +96,10 @@ impl<T> Div<T> for DualNum<T> where T: Copy + Div<Output=T> {
   }
 }
 
-impl<T> Div for DualNum<T> where T: Copy + Neg<Output=T> + Add<Output=T> + Mul<Output=T> + Div<Output=T> {
+impl<T> Div for DualNum<T> where T: Copy + Add<Output=T> + Sub<Output=T> + Mul<Output=T> + Div<Output=T> {
   type Output = DualNum<T>;
 
   fn div(self, rhs: DualNum<T>) -> DualNum<T> {
-    self * DualNum(rhs.0, -rhs.1) / (rhs.0 * rhs.0)
+    DualNum(self.0 / rhs.0, (self.1 * rhs.0 - self.0 * rhs.1) / (rhs.0 * rhs.0))
   }
 }
